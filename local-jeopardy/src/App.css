@@ -1,3 +1,8 @@
+body {
+  background-color: #121212;
+  color: #ffffff;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -35,8 +40,44 @@
 
 .card {
   padding: 2em;
+  background-color: #1e1e1e;
+  border: 1px solid #333333;
+  border-radius: 8px;
 }
 
 .read-the-docs {
-  color: #888;
+  color: #888888;
+}
+
+input, button {
+  background-color: #333333;
+  color: #ffffff;
+  border: 1px solid #444444;
+  padding: 0.5em;
+  margin: 0.5em;
+  border-radius: 4px;
+}
+
+input::placeholder {
+  color: #bbbbbb;
+}
+
+.video-list div {
+  cursor: pointer;
+  margin-bottom: 10px;
+  background-color: #1e1e1e;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+.video-list img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.video-player {
+  margin-top: 20px;
+  background-color: #1e1e1e;
+  padding: 1em;
+  border-radius: 8px;
 }
