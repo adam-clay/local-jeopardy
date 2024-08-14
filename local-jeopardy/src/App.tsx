@@ -1,5 +1,6 @@
 import { useState, FormEvent, ChangeEvent } from 'react'
 import './App.css'
+import JeopardyLogo from './images/Jeopardy-Logo.png'
 
 interface Video {
   id: {
@@ -41,6 +42,7 @@ function App() {
 
   return (
     <>
+      <img src={JeopardyLogo} alt="Jeopardy Logo" className="banner" />
       <form onSubmit={handleSearch}>
         <input 
           type="text" 
@@ -50,7 +52,7 @@ function App() {
         />
         <button type="submit">Search</button>
       </form>
-
+  
       {!selectedVideo && (
         <div className="video-list">
           {videos.map(video => (
@@ -61,7 +63,7 @@ function App() {
           ))}
         </div>
       )}
-
+  
       {selectedVideo && (
         <div className="video-player">
           <iframe 
