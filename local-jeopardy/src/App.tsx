@@ -24,7 +24,7 @@ function App() {
     if (!query.toLowerCase().includes('jeopardy')) {
       query = `jeopardy ${query}`
     }
-    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&key=${import.meta.env.VITE_YOUTUBE_API_KEY}`)
+    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&key=${import.meta.env.VITE_YOUTUBE_API_KEY}`)
     const data = await response.json()
     setVideos(data.items)
   }
