@@ -27,6 +27,7 @@ function App() {
     const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&key=${import.meta.env.VITE_YOUTUBE_API_KEY}`)
     const data = await response.json()
     setVideos(data.items)
+    setSelectedVideo(null)
   }
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
@@ -50,14 +51,16 @@ function App() {
         <button type="submit">Search</button>
       </form>
 
-      <div className="video-list">
-        {videos.map(video => (
-          <div key={video.id.videoId} onClick={() => setSelectedVideo(video)}>
-            <img src={video.snippet.thumbnails.default.url} alt={video.snippet.title} />
-            <p>{video.snippet.title}</p>
-          </div>
-        ))}
-      </div>
+      {!selectedVideo && (
+        <div className="video-list">
+          {videos.map(video => (
+            <div key={video.id.videoId} onClick={() => setSelectedVideo(video)}>
+              <img src={video.snippet.thumbnails.default.url} alt={video.snippet.title} />
+              <p>{video.snippet.title}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {selectedVideo && (
         <div className="video-player">
