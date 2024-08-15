@@ -25,22 +25,31 @@ function App() {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   const fetchVideos = async (query: string) => {
+    console.log('Fetching videos for query:', query);
     if (!query.toLowerCase().includes('jeopardy')) {
       query = `jeopardy ${query}`;
     }
     const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&key=${import.meta.env.VITE_YOUTUBE_API_KEY}`);
     const data = await response.json();
+    console.log('Fetched videos:', data.items);
     setVideos(data.items);
     setSelectedVideo(null);
   };
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Search submitted:', searchQuery);
     fetchVideos(searchQuery);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log('Input changed:', e.target.value);
     setSearchQuery(e.target.value);
+  };
+
+  const handleVideoSelect = (video: Video) => {
+    console.log('Video selected:', video);
+    setSelectedVideo(video);
   };
 
   return (
@@ -63,7 +72,7 @@ function App() {
               {!selectedVideo && (
                 <div className="video-list">
                   {videos.map(video => (
-                    <div key={video.id.videoId} onClick={() => setSelectedVideo(video)}>
+                    <div key={video.id.videoId} onClick={() => handleVideoSelect(video)}>
                       <img src={video.snippet.thumbnails.default.url} alt={video.snippet.title} />
                       <p>{video.snippet.title}</p>
                     </div>
@@ -77,8 +86,7 @@ function App() {
                     width="560" 
                     height="315" 
                     src={`https://www.youtube.com/embed/${selectedVideo.id.videoId}`} 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   ></iframe>
                 </div>

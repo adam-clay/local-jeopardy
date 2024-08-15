@@ -20,6 +20,7 @@ export const VideoControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [isPaused, setIsPaused] = useState(false);
 
   const pauseVideo = () => {
+    console.log('Pausing video');
     const iframe = document.querySelector('iframe');
     if (iframe) {
       const iframeWindow = iframe.contentWindow;
@@ -31,6 +32,7 @@ export const VideoControlProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const playVideo = () => {
+    console.log('Playing video');
     const iframe = document.querySelector('iframe');
     if (iframe) {
       const iframeWindow = iframe.contentWindow;
