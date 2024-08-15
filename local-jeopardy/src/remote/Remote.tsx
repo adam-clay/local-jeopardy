@@ -1,23 +1,14 @@
-import { useState } from 'react';
+import { useVideoControl } from '../VideoControlContext';
 
 const Remote = () => {
-  const [isPaused, setIsPaused] = useState(false);
-
-  const handlePause = () => {
-    const iframe = document.querySelector('iframe');
-    if (iframe) {
-      const iframeWindow = iframe.contentWindow;
-      if (iframeWindow) {
-        iframeWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        setIsPaused(true);
-      }
-    }
-  };
+  const { isPaused, pauseVideo, playVideo } = useVideoControl();
 
   return (
     <div>
       <h1>Remote Control</h1>
-      <button onClick={handlePause}>{isPaused ? 'Paused' : 'Pause'}</button>
+      <button onClick={isPaused ? playVideo : pauseVideo}>
+        {isPaused ? 'Play' : 'Pause'}
+      </button>
     </div>
   );
 };

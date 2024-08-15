@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import JeopardyLogo from './images/Jeopardy-Logo.png';
 import Remote from './remote/Remote';
+import { VideoControlProvider } from './VideoControlContext';
 
 interface Video {
   id: {
@@ -43,49 +44,51 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={
-          <>
-            <img src={JeopardyLogo} alt="Jeopardy Logo" className="banner" />
-            <form onSubmit={handleSearch}>
-              <input 
-                type="text" 
-                value={searchQuery} 
-                onChange={handleInputChange} 
-                placeholder="Search Jeopardy videos" 
-              />
-              <button type="submit">Search</button>
-            </form>
+    <VideoControlProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={
+            <>
+              <img src={JeopardyLogo} alt="Jeopardy Logo" className="banner" />
+              <form onSubmit={handleSearch}>
+                <input 
+                  type="text" 
+                  value={searchQuery} 
+                  onChange={handleInputChange} 
+                  placeholder="Search Jeopardy videos" 
+                />
+                <button type="submit">Search</button>
+              </form>
 
-            {!selectedVideo && (
-              <div className="video-list">
-                {videos.map(video => (
-                  <div key={video.id.videoId} onClick={() => setSelectedVideo(video)}>
-                    <img src={video.snippet.thumbnails.default.url} alt={video.snippet.title} />
-                    <p>{video.snippet.title}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+              {!selectedVideo && (
+                <div className="video-list">
+                  {videos.map(video => (
+                    <div key={video.id.videoId} onClick={() => setSelectedVideo(video)}>
+                      <img src={video.snippet.thumbnails.default.url} alt={video.snippet.title} />
+                      <p>{video.snippet.title}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-            {selectedVideo && (
-              <div className="video-player">
-                <iframe 
-                  width="560" 
-                  height="315" 
-                  src={`https://www.youtube.com/embed/${selectedVideo.id.videoId}`} 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                ></iframe>
-              </div>
-            )}
-          </>
-        } />
-        <Route path="/remote" element={<Remote />} />
-      </Routes>
-    </Router>
+              {selectedVideo && (
+                <div className="video-player">
+                  <iframe 
+                    width="560" 
+                    height="315" 
+                    src={`https://www.youtube.com/embed/${selectedVideo.id.videoId}`} 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
+            </>
+          } />
+          <Route path="/remote" element={<Remote />} />
+        </Routes>
+      </Router>
+    </VideoControlProvider>
   );
 }
 
