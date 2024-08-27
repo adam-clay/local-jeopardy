@@ -1,8 +1,8 @@
-import { useState, FormEvent, ChangeEvent } from 'react';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import JeopardyLogo from './images/Jeopardy-Logo.png';
-import Remote from './remote/Remote';
+import Remote from './components/Remote';
 import { VideoControlProvider } from './VideoControlContext';
 
 interface Video {
@@ -23,33 +23,59 @@ function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [ws, setWs] = useState<WebSocket | null>(null);
 
+  useEffect(() => {
+    const socket = new WebSocket(process.env.REACT_APP_WS_SERVER || 'ws://localhost:8080');
+  
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      // Handle incoming data (e.g., update the search results or selected video)
+      if (data.type === 'search') {
+        setVideos(data.videos);
+        setSelectedVideo(null);
+      } else if (data.type === 'select') {
+        setSelectedVideo(data.video);
+      }
+    };
+  
+    setWs(socket);
+  
+    return () => {
+      socket.close();
+    };
+  }, []);
+  
   const fetchVideos = async (query: string) => {
-    console.log('Fetching videos for query:', query);
     if (!query.toLowerCase().includes('jeopardy')) {
       query = `jeopardy ${query}`;
     }
-    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&key=${import.meta.env.VITE_YOUTUBE_API_KEY}`);
+    const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&videoDuration=long&key=${process.env.REACT_APP_YOUTUBE_API_KEY}`);
     const data = await response.json();
-    console.log('Fetched videos:', data.items);
     setVideos(data.items);
-    setSelectedVideo(null);
+  
+    // Send the search result to all clients
+    if (ws) {
+      ws.send(JSON.stringify({ type: 'search', videos: data.items }));
+    }
   };
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Search submitted:', searchQuery);
     fetchVideos(searchQuery);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('Input changed:', e.target.value);
     setSearchQuery(e.target.value);
   };
 
   const handleVideoSelect = (video: Video) => {
-    console.log('Video selected:', video);
     setSelectedVideo(video);
+
+    // Send the selected video to all clients
+    if (ws) {
+      ws.send(JSON.stringify({ type: 'select', video }));
+    }
   };
 
   return (
@@ -85,8 +111,9 @@ function App() {
                   <iframe 
                     width="560" 
                     height="315" 
-                    src={`https://www.youtube.com/embed/${selectedVideo.id.videoId}`} 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    src={`https://www.youtube.com/embed/${selectedVideo.id.videoId}?enablejsapi=1`} 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowFullScreen
                   ></iframe>
                 </div>
